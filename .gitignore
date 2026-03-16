@@ -1,0 +1,58 @@
+# OS / filesystem
+.DS_Store
+Thumbs.db
+
+# Editors / IDEs
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# Logs
+*.log
+logs/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+
+# Environment / secrets
+.env
+.env.*
+!.env.example
+!.env.sample
+*.pem
+*.key
+secrets/
+
+# Dependencies
+node_modules/
+vendor/
+
+# Python
+__pycache__/
+*.py[cod]
+.pytest_cache/
+.mypy_cache/
+.venv/
+venv/
+
+# Build / cache / artifacts
+dist/
+build/
+target/
+coverage/
+.cache/
+tmp/
+temp/
+
+# Containers / infrastructure
+.terraform/
+*.tfstate
+*.tfstate.*
+.terragrunt-cache/
+
+# Test outputs
+test-results/
+.nyc_output/
