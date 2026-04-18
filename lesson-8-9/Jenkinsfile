@@ -74,7 +74,7 @@ spec:
               git config user.email "${GIT_USER_EMAIL}"
               git add ${CHART_FILE_PATH}
               git commit -m "ci: update django-app image tag to ${IMAGE_TAG}" || echo "No changes to commit"
-              git push origin main
+              git push origin lesson-8-9
             '''
           }
         }
