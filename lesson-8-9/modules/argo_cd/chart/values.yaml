@@ -3,9 +3,9 @@ applications:
     project: default
     namespace: argocd
     source:
-      repoURL: https://github.com/YOUR_GITHUB_USERNAME/YOUR_HELM_REPO.git
-      path: charts/django-app
-      targetRevision: main
+      repoURL: https://github.com/SoloOleh/goit-devops-cicd.git
+      path: lesson-8-9/charts/django-app
+      targetRevision: lesson-8-9
     destination:
       server: https://kubernetes.default.svc
       namespace: default
