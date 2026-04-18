@@ -2,7 +2,7 @@ replicaCount: 1
 
 image:
   repository: 731732766187.dkr.ecr.us-west-2.amazonaws.com/django-app
-  tag: latest
+  tag: build-5
   pullPolicy: Always
 
 command:
