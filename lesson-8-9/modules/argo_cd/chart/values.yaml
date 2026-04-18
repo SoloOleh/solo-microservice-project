@@ -1,0 +1,19 @@
+applications:
+  - name: django-app
+    project: default
+    namespace: argocd
+    source:
+      repoURL: https://github.com/YOUR_GITHUB_USERNAME/YOUR_HELM_REPO.git
+      path: charts/django-app
+      targetRevision: main
+    destination:
+      server: https://kubernetes.default.svc
+      namespace: default
+    syncPolicy:
+      automated:
+        prune: true
+        selfHeal: true
+      syncOptions:
+        - CreateNamespace=true
+
+repositories: []
