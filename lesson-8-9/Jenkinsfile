@@ -48,8 +48,8 @@ spec:
         container('kaniko') {
           sh '''
             /kaniko/executor \
-              --context "${WORKSPACE}" \
-              --dockerfile "${WORKSPACE}/Dockerfile" \
+              --context "${WORKSPACE}/lesson-8-9" \
+              --dockerfile "${WORKSPACE}/lesson-8-9/Dockerfile" \
               --destination "${ECR_REGISTRY}/${IMAGE_NAME}:${IMAGE_TAG}" \
               --cache=true
           '''
@@ -65,7 +65,7 @@ spec:
               rm -rf chart-repo
               git clone https://${GIT_USERNAME}:${GIT_TOKEN}@${CHART_REPO_URL} chart-repo
               cd chart-repo
-              
+
               git checkout lesson-8-9
 
               sed -i "s|tag: .*|tag: ${IMAGE_TAG}|" ${CHART_FILE_PATH}
