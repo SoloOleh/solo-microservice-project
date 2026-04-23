@@ -312,25 +312,7 @@ terraform plan
 
 ---
 
-# 11. Що перевіряє Lesson 10
-
-Згідно з вимогами, модуль `rds` має:
-
-- створювати або **звичайний RDS**, або **Aurora**
-- використовувати прапор `use_aurora`
-- створювати:
-  - `DB Subnet Group`
-  - `Security Group`
-  - `Parameter Group`
-- підтримувати змінні:
-  - `engine`
-  - `engine_version`
-  - `instance_class`
-  - `multi_az`
-
----
-
-# 12. Приклад використання модуля RDS
+# 11. Приклад використання модуля RDS
 
 ```hcl
 module "rds" {
@@ -376,7 +358,7 @@ module "rds" {
 
 ---
 
-# 13. Як змінити тип бази
+# 12. Як змінити тип бази
 
 ## Для звичайного PostgreSQL RDS
 
@@ -412,7 +394,7 @@ engine_version_cluster = "8.0.mysql_aurora.3.05.2"
 
 ---
 
-# 14. Як змінити клас інстансу
+# 13. Як змінити клас інстансу
 
 Приклад:
 
@@ -431,7 +413,7 @@ instance_class = "db.t3.medium"
 
 ---
 
-# 15. Як видалити інфраструктуру
+# 14. Як видалити інфраструктуру
 
 ```bash
 terraform destroy
