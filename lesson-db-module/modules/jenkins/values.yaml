@@ -1,0 +1,31 @@
+controller:
+  admin:
+    username: admin
+    password: change-me-after-first-login
+
+  serviceType: LoadBalancer
+
+  resources:
+    requests:
+      cpu: "250m"
+      memory: "512Mi"
+    limits:
+      cpu: "1000m"
+      memory: "1Gi"
+
+  installPlugins:
+    - kubernetes:latest
+    - workflow-aggregator:latest
+    - git:latest
+    - configuration-as-code:latest
+    - credentials-binding:latest
+    - job-dsl:latest
+
+  serviceAccount:
+    create: false
+    name: jenkins-sa
+
+persistence:
+  enabled: true
+  storageClass: "ebs-sc"
+  size: 10Gi

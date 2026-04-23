@@ -1,0 +1,84 @@
+pipeline {
+  agent {
+    kubernetes {
+      defaultContainer 'git'
+      yaml '''
+apiVersion: v1
+kind: Pod
+metadata:
+  labels:
+    app: jenkins-kaniko-agent
+spec:
+  serviceAccountName: jenkins-sa
+  containers:
+    - name: kaniko
+      image: gcr.io/kaniko-project/executor:v1.23.2-debug
+      command: ["/busybox/cat"]
+      tty: true
+    - name: git
+      image: alpine/git:2.45.2
+      command: ["/bin/sh", "-c", "cat"]
+      tty: true
+'''
+    }
+  }
+
+  environment {
+    AWS_REGION      = 'us-west-2'
+    ECR_REGISTRY    = '731732766187.dkr.ecr.us-west-2.amazonaws.com'
+    IMAGE_NAME      = 'django-app'
+    IMAGE_TAG       = "build-${BUILD_NUMBER}"
+
+    CHART_REPO_URL  = 'github.com/SoloOleh/goit-devops-cicd.git'
+    CHART_FILE_PATH = 'lesson-8-9/charts/django-app/values.yaml'
+
+    GIT_USER_NAME   = 'jenkins'
+    GIT_USER_EMAIL  = 'jenkins@example.com'
+  }
+
+  stages {
+    stage('Checkout source repository') {
+      steps {
+        checkout scm
+      }
+    }
+
+    stage('Build and push image to ECR') {
+      steps {
+        container('kaniko') {
+          sh '''
+            /kaniko/executor \
+              --context "${WORKSPACE}/lesson-8-9/web" \
+              --dockerfile "${WORKSPACE}/lesson-8-9/web/Dockerfile" \
+              --destination "${ECR_REGISTRY}/${IMAGE_NAME}:${IMAGE_TAG}" \
+              --cache=true
+          '''
+        }
+      }
+    }
+
+    stage('Update Helm chart tag') {
+      steps {
+        container('git') {
+          withCredentials([usernamePassword(credentialsId: 'github-token', usernameVariable: 'GIT_USERNAME', passwordVariable: 'GIT_TOKEN')]) {
+            sh '''
+              rm -rf chart-repo
+              git clone https://${GIT_USERNAME}:${GIT_TOKEN}@${CHART_REPO_URL} chart-repo
+              cd chart-repo
+
+              git checkout lesson-8-9
+
+              sed -i "s|tag: .*|tag: ${IMAGE_TAG}|" ${CHART_FILE_PATH}
+
+              git config user.name "${GIT_USER_NAME}"
+              git config user.email "${GIT_USER_EMAIL}"
+              git add ${CHART_FILE_PATH}
+              git commit -m "ci: update django-app image tag to ${IMAGE_TAG}" || echo "No changes to commit"
+              git push origin lesson-8-9
+            '''
+          }
+        }
+      }
+    }
+  }
+}

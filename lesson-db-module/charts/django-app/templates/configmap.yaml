@@ -1,0 +1,15 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: django-app-config
+  labels:
+    app: django-app
+data:
+  DJANGO_SECRET_KEY: {{ .Values.config.DJANGO_SECRET_KEY | quote }}
+  DEBUG: {{ .Values.config.DEBUG | quote }}
+  ALLOWED_HOSTS: {{ .Values.config.ALLOWED_HOSTS | quote }}
+  POSTGRES_HOST: {{ .Values.config.POSTGRES_HOST | quote }}
+  POSTGRES_PORT: {{ .Values.config.POSTGRES_PORT | quote }}
+  POSTGRES_DB: {{ .Values.config.POSTGRES_DB | quote }}
+  POSTGRES_USER: {{ .Values.config.POSTGRES_USER | quote }}
+  POSTGRES_PASSWORD: {{ .Values.config.POSTGRES_PASSWORD | quote }}
