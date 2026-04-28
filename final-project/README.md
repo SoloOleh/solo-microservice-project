@@ -190,6 +190,85 @@ Terraform створить:
 
 ---
 
+## 6. Збірка та завантаження Docker image в ECR
+
+Після виконання `terraform apply` інфраструктура AWS буде створена: VPC, EKS, RDS, ECR, Jenkins, Argo CD, Prometheus та Grafana.
+
+Важливо розуміти, що Terraform створює інфраструктуру, але не збирає Docker image застосунку автоматично. Terraform створює ECR repository, але сам image потрібно зібрати та завантажити окремо.
+
+У реальному CI/CD процесі це має виконувати Jenkins pipeline. Jenkins бере код застосунку, збирає Docker image, завантажує його в ECR, після чого Argo CD розгортає застосунок у Kubernetes.
+
+Для ручної перевірки проєкту image можна зібрати та завантажити в ECR локально.
+
+Перейдіть у папку Django:
+
+```bash
+cd Django
+```
+
+Авторизуйте Docker в Amazon ECR:
+
+```bash
+aws ecr get-login-password --region us-west-2 | docker login --username AWS --password-stdin 731732766187.dkr.ecr.us-west-2.amazonaws.com
+```
+
+Зберіть і одразу завантажте image в ECR:
+
+```bash
+docker buildx build \
+  --platform linux/amd64 \
+  -t 731732766187.dkr.ecr.us-west-2.amazonaws.com/django-app:latest \
+  --push .
+```
+
+Після успішного завантаження image в ECR поверніться в корінь проєкту:
+
+```bash
+cd ..
+```
+
+Перезапустіть deployment:
+
+```bash
+kubectl rollout restart deployment/django-app
+```
+
+Перевірте стан pod:
+
+```bash
+kubectl get pods
+```
+
+Очікуваний результат:
+
+```text
+django-app-...   1/1   Running
+```
+
+Також перевірте стан застосунку в Argo CD:
+
+```bash
+kubectl get applications -n argocd
+```
+
+Очікуваний результат:
+
+```text
+django-app   Synced   Healthy
+```
+
+Якщо pod зависає в статусі `Pending`, найімовірніше не вистачає ресурсів або pod-slot на EKS node. У такому випадку можна тимчасово зменшити кількість допоміжних monitoring pod-ів:
+
+```bash
+kubectl scale deployment prometheus-prometheus-pushgateway -n monitoring --replicas=0
+kubectl scale deployment prometheus-kube-state-metrics -n monitoring --replicas=0
+kubectl rollout restart deployment/django-app
+```
+
+Prometheus server, Grafana і node-exporter при цьому залишаються працювати, тому основна перевірка моніторингу залишається можливою.
+
+---
+
 ## 7. Якщо ресурс уже існує
 
 в AWS можуть вже існувати ресурси з такими самими іменами:
@@ -262,7 +341,7 @@ kubectl get all -n monitoring
 
 ---
 
-## 10. Перевірка Jenkins
+## 9. Перевірка Jenkins
 
 Запусти port-forward:
 
@@ -294,7 +373,7 @@ change-me-after-first-login
 
 ---
 
-## 9. Що треба налаштувати в Jenkins для CI
+## 10. Що треба налаштувати в Jenkins для CI
 
 У Jenkins треба створити credential для GitHub token.
 
@@ -338,7 +417,7 @@ Jenkinsfile робить 2 головні речі:
 
 ---
 
-## 10. Перевірка Argo CD
+## 11. Перевірка Argo CD
 
 Запусти port-forward:
 
@@ -349,7 +428,7 @@ kubectl port-forward svc/argocd-server 8081:80 -n argocd
 Відкрий у браузері:
 
 ```text
-https://localhost:8081
+http://localhost:8081
 ```
 
 Логін:
@@ -374,7 +453,7 @@ django-app
 
 ---
 
-## 11. Перевірка Django application
+## 12. Перевірка Django application
 
 Перевір pod-и:
 
@@ -410,7 +489,7 @@ Django app is running in the final DevOps project.
 
 ---
 
-## 12. Перевірка Prometheus і Grafana
+## 13. Перевірка Prometheus і Grafana
 
 Grafana:
 
@@ -452,7 +531,7 @@ http://localhost:9090
 
 ---
 
-## 13. Перевірка autoscaling
+## 14. Перевірка autoscaling
 
 У Helm chart є файл:
 
@@ -472,7 +551,7 @@ Metrics Server встановлюється автоматично через mo
 
 ---
 
-## 14. Перемикання RDS / Aurora
+## 15. Перемикання RDS / Aurora
 
 За замовчуванням:
 
@@ -507,7 +586,7 @@ terraform apply -var="use_aurora=true"
 
 ---
 
-## 15. Backend.tf і чому він закоментований
+## 16. Backend.tf і чому він закоментований
 
 Файл `backend.tf` у проєкті є, але remote backend закоментований.
 
@@ -534,7 +613,7 @@ terraform apply -var="use_aurora=true"
 
 ---
 
-## 16. Команди для швидкої перевірки
+## 17. Команди для швидкої перевірки
 
 ```bash
 terraform fmt -recursive
@@ -551,13 +630,13 @@ Port-forward:
 
 ```bash
 kubectl port-forward svc/jenkins 8080:8080 -n jenkins
-kubectl port-forward svc/argocd-server 8081:443 -n argocd
+kubectl port-forward svc/argocd-server 8081:80 -n argocd
 kubectl port-forward svc/grafana 3000:80 -n monitoring
 ```
 
 ---
 
-## 17. Видалення ресурсів після перевірки
+## 18. Видалення ресурсів після перевірки
 
 Щоб не було зайвих витрат в AWS, після перевірки обов’язково видали ресурси:
 
