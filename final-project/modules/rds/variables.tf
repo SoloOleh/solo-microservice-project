@@ -98,7 +98,7 @@ variable "multi_az" {
 variable "backup_retention_period" {
   description = "Кількість днів зберігання backup"
   type        = number
-  default     = 7
+  default     = 0
 }
 
 variable "parameter_group_family_rds" {

@@ -57,7 +57,7 @@ resource "null_resource" "jenkins" {
 
   provisioner "local-exec" {
     interpreter = ["bash", "-lc"]
-    command = <<EOT
+    command     = <<EOT
 set -euo pipefail
 
 kubectl create namespace ${var.namespace} --dry-run=client -o yaml | kubectl apply -f -
@@ -100,7 +100,7 @@ EOT
   provisioner "local-exec" {
     when        = destroy
     interpreter = ["bash", "-lc"]
-    command = <<EOT
+    command     = <<EOT
 set +e
 helm uninstall ${self.triggers.release_name} -n ${self.triggers.namespace}
 kubectl delete namespace ${self.triggers.namespace} --ignore-not-found=true

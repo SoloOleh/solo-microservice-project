@@ -17,7 +17,7 @@ resource "null_resource" "argo_cd" {
 
   provisioner "local-exec" {
     interpreter = ["bash", "-lc"]
-    command = <<EOT
+    command     = <<EOT
 set -euo pipefail
 
 helm repo add argo https://argoproj.github.io/argo-helm
@@ -78,7 +78,7 @@ EOT
   provisioner "local-exec" {
     when        = destroy
     interpreter = ["bash", "-lc"]
-    command = <<EOT
+    command     = <<EOT
 set +e
 helm uninstall ${self.triggers.release_name}-apps -n ${self.triggers.namespace}
 helm uninstall ${self.triggers.release_name} -n ${self.triggers.namespace}

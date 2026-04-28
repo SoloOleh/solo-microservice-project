@@ -81,7 +81,7 @@ module "rds" {
   publicly_accessible     = false
   vpc_id                  = module.vpc.vpc_id
   multi_az                = false
-  backup_retention_period = 7
+  backup_retention_period = 0
   allowed_cidr_blocks     = [var.vpc_cidr_block]
 
   parameters = {
@@ -109,7 +109,7 @@ resource "null_resource" "configure_kubeconfig" {
 
   provisioner "local-exec" {
     interpreter = ["bash", "-lc"]
-    command = <<EOT
+    command     = <<EOT
 set -euo pipefail
 aws eks update-kubeconfig --region ${var.aws_region} --name ${module.eks.eks_cluster_name}
 

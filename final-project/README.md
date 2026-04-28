@@ -284,6 +284,8 @@ admin
 
 Пароль:
 
+kubectl exec --namespace jenkins -it svc/jenkins -c jenkins -- /bin/cat /run/secrets/additional/chart-admin-password && echo
+
 ```text
 change-me-after-first-login
 ```
@@ -341,7 +343,7 @@ Jenkinsfile робить 2 головні речі:
 Запусти port-forward:
 
 ```bash
-kubectl port-forward svc/argocd-server 8081:443 -n argocd
+kubectl port-forward svc/argocd-server 8081:80 -n argocd
 ```
 
 Відкрий у браузері:
@@ -506,8 +508,6 @@ terraform apply -var="use_aurora=true"
 ---
 
 ## 15. Backend.tf і чому він закоментований
-
-У вимогах є `backend.tf` для S3 + DynamoDB.
 
 Файл `backend.tf` у проєкті є, але remote backend закоментований.
 

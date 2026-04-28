@@ -10,7 +10,7 @@ resource "null_resource" "monitoring" {
 
   provisioner "local-exec" {
     interpreter = ["bash", "-lc"]
-    command = <<EOT
+    command     = <<EOT
 set -euo pipefail
 
 helm repo add prometheus-community https://prometheus-community.github.io/helm-charts
@@ -43,7 +43,7 @@ EOT
   provisioner "local-exec" {
     when        = destroy
     interpreter = ["bash", "-lc"]
-    command = <<EOT
+    command     = <<EOT
 set +e
 helm uninstall ${self.triggers.grafana_release_name} -n ${self.triggers.namespace}
 helm uninstall ${self.triggers.prometheus_release_name} -n ${self.triggers.namespace}
